@@ -9,7 +9,7 @@ export let tickets = [
     priority: "High",
     status: "Waiting for Customer",
     customerId: "u1",
-    assignedAgentId: "Not Yet Assigned",
+    assignedAgentId: "Zain",
     createdAt: "08 Sept 2026",
     updatedAt: "08 Sept 2026"
   },
@@ -22,7 +22,7 @@ export let tickets = [
     priority: "Medium",
     status: "Assigned",
     customerId: "u1",
-    assignedAgentId: "John",
+    assignedAgentId: "Zain",
     createdAt: "08 Sept 2026",
     updatedAt: "08 Sept 2026"
   },
@@ -35,7 +35,7 @@ export let tickets = [
     priority: "High",
     status: "Resolved",
     customerId: "u1",
-    assignedAgentId: "Helen",
+    assignedAgentId: "Zain",
     createdAt: "08 Sept 2026",
     updatedAt: "08 Sept 2026"
   }, {
@@ -47,7 +47,7 @@ export let tickets = [
     priority: "High",
     status: "Waiting for Customer",
     customerId: "u1",
-    assignedAgentId: "Not Yet Assigned",
+    assignedAgentId: "Zain",
     createdAt: "08 Sept 2026",
     updatedAt: "08 Sept 2026"
   },
@@ -57,10 +57,10 @@ export let tickets = [
     subject: "Order not delivered",
     description: "My order was supposed to arrive 2 days ago",
     category: "Delivery Issue",
-    priority: "Medium",
+    priority: "High",
     status: "Assigned",
     customerId: "u1",
-    assignedAgentId: "John",
+    assignedAgentId: "Zain",
     createdAt: "08 Sept 2026",
     updatedAt: "08 Sept 2026"
   },
@@ -73,7 +73,7 @@ export let tickets = [
     priority: "High",
     status: "Resolved",
     customerId: "u1",
-    assignedAgentId: "Helen",
+    assignedAgentId: "Zain",
     createdAt: "08 Sept 2026",
     updatedAt: "08 Sept 2026"
   }

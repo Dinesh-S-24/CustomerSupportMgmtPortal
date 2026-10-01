@@ -12,8 +12,8 @@ import Nav       from '@/app/components/Nav';
 // const PAGE_SIZE = 5;
 export default function MyTicketsPage() {
   const [selectedTicket, setSelectedTicket] = useState(null);
-const [pageSize, setPageSize] = useState(5);
-const [showConversation, setShowConversation] = useState(false);
+  const [pageSize, setPageSize] = useState(5);
+  const [showConversation, setShowConversation] = useState(false);
   // This contains ALL tickets returned from backend
   const [tickets, setTickets] = useState([]);
 
@@ -24,6 +24,7 @@ const [showConversation, setShowConversation] = useState(false);
   const [page, setPage] = useState(1);
 
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     // let active = true;
@@ -34,26 +35,22 @@ const [showConversation, setShowConversation] = useState(false);
       search,
       status
     })
-      .then((data) => {
-        console.log("the data for now is", data);
+        .then((data) => {
+          // if (!active) return;
 
-        // if (!active) return;
+          // Backend is returning:
+          // { success: true, message: "Success", data: [...] }
 
-        // Backend is returning:
-        // { success: true, message: "Success", data: [...] }
-
-        setTickets(data.data.tickets || []);
-
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-
-        // if (active) {
-        //   setTickets([]);
-        //   setLoading(false);
-        // }
-      });
+          setTickets(data.data.tickets || []);
+          setLoadError(false);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoadError(true);
+          setTickets([]);
+          setLoading(false);
+        });
 
     // return () => {
     //   active = false;
@@ -67,8 +64,8 @@ const [showConversation, setShowConversation] = useState(false);
   const total = tickets.length;
 
   const totalPages = Math.max(
-    1,
-    Math.ceil(total / pageSize)
+      1,
+      Math.ceil(total / pageSize)
   );
 
   const startIndex = (page - 1) * pageSize;
@@ -76,123 +73,135 @@ const [showConversation, setShowConversation] = useState(false);
   const endIndex = startIndex + pageSize;
 
   const currentTickets = tickets.slice(
-    startIndex,
-    endIndex
+      startIndex,
+      endIndex
   );
 
   return (
-    <main className="agent-tickets-page">
-      <Nav />
+      <main className="agent-tickets-page">
+        <Nav />
 
-      <div className="agent-tickets-container">
+        <div className="agent-tickets-container">
 
-        {/* PAGE HEADER */}
+          {/* PAGE HEADER */}
 
-        <div className="support-page-header">
+          <div className="support-page-header">
 
-          <div>
+            <div>
 
-            <h1 className="support-page-title">
-              My Tickets
-            </h1>
+              <h1 className="support-page-title">
+                My Tickets
+              </h1>
 
-            <p className="support-page-subtitle">
-              View and track your support requests
-            </p>
+              <p className="support-page-subtitle">
+                View, track, and manage your support requests
+              </p>
+
+            </div>
+
+
 
           </div>
 
+          {/* MAIN CARD */}
 
+          <div className="support-card">
 
-        </div>
+            {/* CARD HEADER */}
 
-        {/* MAIN CARD */}
+            <div className="support-card-header">
 
-        <div className="support-card">
+              <div className="support-filters">
 
-          {/* CARD HEADER */}
+                <div>
 
-          <div className="support-card-header">
+                  <h2 className="support-card-title">
+                    Support Requests
+                  </h2>
 
-            <div className="support-filters">
+                  <p className="support-card-description">
+                    Track the status of your submitted tickets
+                  </p>
 
-              <div>
+                </div>
 
-                <h2 className="support-card-title">
-                  Support Requests
-                </h2>
+                <div className="support-filter-group">
 
-                <p className="support-card-description">
-                  Track the status of your submitted tickets
-                </p>
+                  <label className="support-search-wrap">
+                    <span aria-hidden="true" className="support-search-icon">⌕</span>
 
-              </div>
+                  <input
+                      type="text"
+                      placeholder="Search tickets..."
+                      value={search}
+                      onChange={(e) => {
 
-              <div className="support-filter-group">
+                        setSearch(e.target.value);
+                        setPage(1);
+                      }}
+                      className="support-input"
+                  />
+                  </label>
 
-                <input
-                  type="text"
-                  placeholder="Search tickets..."
-                  value={search}
-                  onChange={(e) => {
-                    
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                  className="support-input"
-                />
+                  {/* <select
+                      value={status}
+                      onChange={(e) => {
+                        setStatus(e.target.value);
+                        setPage(1);
+                      }}
+                      className="support-select"
+                  >
 
-                <select
-                  value={status}
-                  onChange={(e) => {
-                    setStatus(e.target.value);
-                    setPage(1);
-                  }}
-                  className="support-select"
-                >
-
-                  <option value="">
-                    All statuses
-                  </option>
-
-                  {STATUSES.map((s) => (
-                    <option
-                      key={s}
-                      value={s}
-                    >
-                      {s}
+                    <option value="">
+                      All statuses
                     </option>
-                  ))}
 
-                </select>
-  {/* NEW — page size dropdown */}
-  <select
-    value={pageSize}
-    onChange={(e) => {
-      setPageSize(Number(e.target.value)); // e.target.value is always a string, so convert
-      setPage(1); // reset to page 1, otherwise you might land on an out-of-range page
-    }}
-    className="support-select"
-  >
-    <option value={5}>5 per page</option>
-    <option value={10}>10 per page</option>
-    <option value={15}>15 per page</option>
-    <option value={25}>25 per page</option>
-  </select>
+                    {STATUSES.map((s) => (
+                        <option
+                            key={s}
+                            value={s}
+                        >
+                          {s}
+                        </option>
+                    ))}
+
+                  </select> */}
+                  {/* NEW — page size dropdown */}
+                  <select
+                      value={pageSize}
+                      onChange={(e) => {
+                        setPageSize(Number(e.target.value)); // e.target.value is always a string, so convert
+                        setPage(1); // reset to page 1, otherwise you might land on an out-of-range page
+                      }}
+                      className="support-select"
+                  >
+                    <option value={5}>5 per page</option>
+                    <option value={10}>10 per page</option>
+                    <option value={15}>15 per page</option>
+                    <option value={25}>25 per page</option>
+                  </select>
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
+            <div className="ticket-quick-filters" aria-label="Filter tickets by status">
+              <button type="button" className={`ticket-filter-chip ${status === "" ? "active" : ""}`} onClick={() => { setStatus(""); setPage(1); }} aria-pressed={status === ""}>All tickets</button>
+              {STATUSES.map((s) => (
+                <button key={s} type="button" className={`ticket-filter-chip ${status === s ? "active" : ""}`} onClick={() => { setStatus(s); setPage(1); }} aria-pressed={status === s}>{s}</button>
+              ))}
+              <span className="ticket-result-count">{loading ? "Updating…" : `${total} ${total === 1 ? "ticket" : "tickets"}`}</span>
+            </div>
 
-          {/* TABLE */}
+            {/* TABLE */}
 
-          <div className="support-table-wrapper">
+            <div className="support-table-wrapper">
 
-            <table className="support-table">
+              <table className="support-table">
 
-              <thead>
+                <thead>
 
                 <tr>
 
@@ -207,253 +216,254 @@ const [showConversation, setShowConversation] = useState(false);
 
                 </tr>
 
-              </thead>
+                </thead>
 
-              <tbody>
+                <tbody>
 
                 {/* LOADING */}
 
                 {loading && (
 
-                  <tr>
+                    <tr>
 
-                    <td
-                      colSpan="12"
-                      className="support-loading"
-                    >
+                      <td
+                          colSpan="12"
+                          className="support-loading"
+                      >
 
-                      <div className="support-spinner"></div>
+                        <div className="support-spinner"></div>
 
-                      Loading your tickets...
+                        Loading your tickets...
 
-                    </td>
+                      </td>
 
-                  </tr>
+                    </tr>
 
                 )}
 
                 {/* EMPTY */}
 
                 {!loading &&
-                  currentTickets.length === 0 && (
+                    currentTickets.length === 0 && (
 
-                    <tr>
+                        <tr>
 
-                      <td colSpan="12">
+                          <td colSpan="12">
 
-                        <div className="support-empty">
+                            <div className="support-empty">
 
-                          <div className="support-empty-icon">
-                            ?
-                          </div>
+                              <div className="support-empty-icon">
+                                ?
+                              </div>
 
-                          <p className="support-empty-title">
-                            No tickets found
-                          </p>
+                              <p className="support-empty-title">
+                                {loadError ? "Couldn’t load tickets" : "No tickets found"}
+                              </p>
 
-                          <p className="support-empty-text">
-                            Try changing your status filter.
-                          </p>
+                              <p className="support-empty-text">
+                                {loadError ? "Please try again in a moment." : "Try changing your search or status filter."}
+                              </p>
+                              {loadError && <button type="button" className="support-btn support-btn-secondary" onClick={() => { setLoading(true); setLoadError(false); getTickets({ search, status }).then((data) => { setTickets(data.data.tickets || []); setLoading(false); }).catch(() => { setLoadError(true); setLoading(false); }); }}>Try again</button>}
 
 
 
-                        </div>
+                            </div>
 
-                      </td>
+                          </td>
 
-                    </tr>
+                        </tr>
 
-                  )}
+                    )}
 
                 {/* TICKETS */}
 
                 {!loading &&
-                  currentTickets.map((t) => (
+                    currentTickets.map((t) => (
 
-                    <tr key={t._id}>
+                        <tr key={t._id}>
 
-                      {/* TICKET */}
+                          {/* TICKET */}
 
-                      <td>
+                          <td>
 
                          <span className="ticket-number">
     {t.ticketNumber}
   </span>
 
 
-                        <div className="ticket-id">
-                          #{t._id}
-                        </div>
+                            <div className="ticket-id">
+                              #{t._id}
+                            </div>
 
-                      </td>
+                          </td>
 
-                      {/* SUBJECT */}
+                          {/* SUBJECT */}
 
-                      <td>
+                          <td>
 
-                        {/* <Link
+                            {/* <Link
                           href={`/tickets/${t._id}`}
                           className="ticket-subject"
                         > */}
-                          {t.subject}
-                        {/* </Link> */}
+                            {t.subject}
+                            {/* </Link> */}
 
-                      </td>
+                          </td>
 
-                      {/* CATEGORY */}
+                          {/* CATEGORY */}
 
-                      <td>
-                        <span className="ticket-category">{t.category}</span>
-                      </td>
+                          <td>
+                            <span className="ticket-category">{t.category}</span>
+                          </td>
 
-                      {/* PRIORITY */}
+                          {/* PRIORITY */}
 
-                      <td>
+                          <td>
                         <span className={`ticket-priority ticket-priority-${String(t.priority || "normal").toLowerCase()}`}>
                           <span className="ticket-priority-dot" aria-hidden="true" />
                           {t.priority}
                         </span>
-                      </td>
+                          </td>
 
-                      {/* STATUS */}
+                          {/* STATUS */}
 
-                      <td>
+                          <td>
 
-                        <StatusTag
-                          status={t.status}
-                        />
+                            <StatusTag
+                                status={t.status}
+                            />
 
-                      </td>
+                          </td>
 
-                      {/* CREATED AT */}
+                          {/* CREATED AT */}
 
-                      <td>
-                        <span className="ticket-date">{t.createdAt}</span>
-                      </td>
+                          <td>
+                            <span className="ticket-date">{t.createdAt}</span>
+                          </td>
 
-                      {/* ASSIGNED AGENT */}
+                          {/* ASSIGNED AGENT */}
 
-                      <td>
-                        <span className="ticket-agent">{t.assignedAgentId || "Unassigned"}</span>
-                      </td>
+                          <td>
+                            <span className="ticket-agent">{t.assignedAgentId || "Unassigned"}</span>
+                          </td>
 
-                      {/* ACTION */}
+                          {/* ACTION */}
 
-                      <td>
+                          <td>
 
-                        <button
-                          onClick={() => setSelectedTicket(t)}
-                          className="support-btn support-btn-secondary support-btn-small"
-                        >
-                          View →
-                        </button>
+                            <button
+                                onClick={() => setSelectedTicket(t)}
+                                className="support-btn support-btn-secondary support-btn-small"
+                            >
+                              View →
+                            </button>
 
-                      </td>
+                          </td>
 
-                    </tr>
+                        </tr>
 
-                  ))}
+                    ))}
 
-              </tbody>
+                </tbody>
 
-            </table>
-
-          </div>
-
-          {/* PAGINATION */}
-
-          {!loading && totalPages > 0 && (
-
-            <div className="support-pagination">
-
-              <div className="support-pagination-info">
-
-                Showing{" "}
-                {startIndex + 1}
-                {" "}to{" "}
-                {Math.min(endIndex, total)}
-                {" "}of{" "}
-                {total}
-                {" "}tickets
-
-              </div>
-
-              <div className="support-pagination-buttons">
-
-                {/* PREVIOUS */}
-
-                <button
-                  disabled={page === 1}
-                  onClick={() =>
-                    setPage((p) => p - 1)
-                  }
-                  className="support-page-button"
-                >
-                  Previous
-                </button>
-
-                {/* CURRENT PAGE */}
-
-                <button
-                  className="support-page-button active"
-                >
-                  {page}
-                </button>
-
-                {/* NEXT */}
-
-                <button
-                  disabled={page === totalPages}
-                  onClick={() =>
-                    setPage((p) => p + 1)
-                  }
-                  className="support-page-button"
-                >
-                  Next
-                </button>
-
-              </div>
+              </table>
 
             </div>
 
-          )}
+            {/* PAGINATION */}
 
-        </div>
+            {!loading && totalPages > 0 && (
 
-        {/* HELP CARD */}
+                <div className="support-pagination">
 
-        <div className="support-help-card">
+                  <div className="support-pagination-info">
 
-          <div>
+                    Showing{" "}
+                    {startIndex + 1}
+                    {" "}to{" "}
+                    {Math.min(endIndex, total)}
+                    {" "}of{" "}
+                    {total}
+                    {" "}tickets
 
-            <p className="support-help-title">
-              Need help with something else?
-            </p>
+                  </div>
 
-            <p className="support-help-text">
-              Submit a new support request and our
-              team will get back to you.
-            </p>
+                  <div className="support-pagination-buttons">
+
+                    {/* PREVIOUS */}
+
+                    <button
+                        disabled={page === 1}
+                        onClick={() =>
+                            setPage((p) => p - 1)
+                        }
+                        className="support-page-button"
+                    >
+                      Previous
+                    </button>
+
+                    {/* CURRENT PAGE */}
+
+                    <button
+                        className="support-page-button active"
+                    >
+                      {page}
+                    </button>
+
+                    {/* NEXT */}
+
+                    <button
+                        disabled={page === totalPages}
+                        onClick={() =>
+                            setPage((p) => p + 1)
+                        }
+                        className="support-page-button"
+                    >
+                      Next
+                    </button>
+
+                  </div>
+
+                </div>
+
+            )}
 
           </div>
 
+          {/* HELP CARD */}
+
+          {/* <div className="support-help-card">
+
+            <div>
+
+              <p className="support-help-title">
+                Need help with something else?
+              </p>
+
+              <p className="support-help-text">
+                Submit a new support request and our
+                team will get back to you.
+              </p>
+
+            </div>
+
+          </div> */}
+
         </div>
 
-      </div>
-
-      {selectedTicket && !showConversation &&(
-        <TicketDetailsPage
-          ticket={selectedTicket}
-          onClose={() => setSelectedTicket(null)} onViewConversation={() => setShowConversation(true)}
-        />
-      )}
-    {/* Conversation */}
-      {showConversation && selectedTicket && (
-        <ConversationModal
-          ticket={selectedTicket}
-          onClose={() => setShowConversation(false)}
-        />
-      )}
-    </main>
+        {selectedTicket && !showConversation &&(
+            <TicketDetailsPage
+                ticket={selectedTicket}
+                onClose={() => setSelectedTicket(null)} onViewConversation={() => setShowConversation(true)}
+            />
+        )}
+        {/* Conversation */}
+        {showConversation && selectedTicket && (
+            <ConversationModal
+                ticket={selectedTicket}
+                onClose={() => setShowConversation(false)}
+            />
+        )}
+      </main>
   );
 }
