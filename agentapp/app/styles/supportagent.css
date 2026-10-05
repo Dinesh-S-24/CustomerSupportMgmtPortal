@@ -611,8 +611,7 @@
 @keyframes agent-modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
 .agent-modal { width: 100%; overflow: hidden; color: var(--agent-text); background: var(--agent-card); border: 1px solid rgba(255,255,255,.65); border-radius: 22px; box-shadow: 0 32px 90px -32px rgba(14,11,51,.62), 0 12px 34px -20px rgba(79,70,229,.36); font-family: var(--agent-font); animation: agent-modal-rise .22s cubic-bezier(.2,.75,.25,1); }
 @keyframes agent-modal-rise { from { opacity: .7; transform: translateY(10px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
-.agent-details-modal { position: relative; max-width: 720px; }
-.agent-details-modal { max-width: 820px; }
+.agent-details-modal { position: relative; max-width: 820px; max-height: min(900px, calc(100dvh - 48px)); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
 .agent-customer-card { margin: 0 24px 4px; padding: 19px 20px 18px; background: linear-gradient(135deg, #faf9ff, #fff 68%); border: 1px solid var(--agent-border); border-radius: 16px;margin-top: 1rem; }
 .agent-customer-heading { display: flex; align-items: center; gap: 13px; padding-bottom: 16px; }
 .agent-customer-avatar { display: grid; flex: 0 0 44px; width: 44px; height: 44px; color: #fff; font-size: 13px; font-weight: 800; place-items: center; background: var(--agent-gradient-brand); border-radius: 14px; box-shadow: 0 7px 16px -10px rgba(79,70,229,.8); }
@@ -633,6 +632,24 @@
 .agent-modal-close:focus-visible, .agent-button:focus-visible, .agent-conversation-input:focus-visible { outline: 3px solid rgba(124,58,237,.35); outline-offset: 2px; }
 .agent-details-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1px; background: var(--agent-border); border-bottom: 1px solid var(--agent-border); }
 .agent-detail-item { min-width: 0; padding: 17px 19px; background: #fff; }
+.agent-ticket-lifecycle { margin: 24px 20px; padding: 18px; background: #faf9ff; border: 1px solid var(--agent-border); border-radius: 16px; }
+.agent-ticket-lifecycle-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.agent-ticket-lifecycle-heading .agent-details-description-title { margin: 0; }
+.agent-ticket-lifecycle-help { margin: 4px 0 0; color: var(--agent-text-muted); font-size: 11px; }
+.agent-status-advance { flex: 0 0 auto; min-height: 38px; padding: 0 13px; font-size: 11px; }
+.agent-status-advance:disabled { opacity: .55; cursor: wait; }
+.agent-ticket-status-flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.agent-ticket-status-step { position: relative; display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 8px; color: var(--agent-text-muted); }
+.agent-ticket-status-step:not(:last-child)::after { position: absolute; top: 13px; left: 30px; right: -4px; height: 2px; content: ""; background: #e5e3f1; }
+.agent-ticket-status-step.is-complete:not(:last-child)::after { background: #8b83ea; }
+.agent-ticket-status-marker { z-index: 1; display: grid; width: 27px; height: 27px; color: #85839d; font-size: 10px; font-weight: 800; place-items: center; background: #eeedf5; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #dedcea; }
+.agent-ticket-status-step.is-complete .agent-ticket-status-marker { color: #fff; background: #6d63d9; box-shadow: 0 0 0 1px #6d63d9; }
+.agent-ticket-status-step.is-current .agent-ticket-status-marker { color: #fff; background: var(--agent-indigo); box-shadow: 0 0 0 3px #dcd9ff; }
+.agent-ticket-status-copy { display: flex; flex-direction: column; gap: 4px; }
+.agent-ticket-status-copy strong { color: #77758f; font-size: 10px; line-height: 1.25; }
+.agent-ticket-status-step.is-current .agent-ticket-status-copy strong { color: var(--agent-indigo); }
+.agent-ticket-status-copy small { color: #9997ae; font-size: 9px; line-height: 1.4; }
+.agent-status-error { margin: 12px 0 0; color: var(--agent-danger); font-size: 11px; }
 .agent-detail-label { margin: 0 0 6px; color: var(--agent-text-muted); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
 .agent-detail-value { overflow-wrap: anywhere; margin: 0; color: var(--agent-text); font-size: 12px; font-weight: 700; line-height: 1.5; }
 .agent-details-description { padding: 22px 30px 25px; }
@@ -666,6 +683,16 @@
 .agent-conversation-input:focus { border-color: var(--agent-violet); box-shadow: 0 0 0 4px rgba(124,58,237,.12); outline: 0; }
 .agent-conversation-send { min-height: 44px; padding: 0 18px; white-space: nowrap; }
 .agent-conversation-send:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+.agent-conversation-composer .agent-internal-note-trigger { flex: 0 0 auto; min-height: 40px; padding: 0 12px; color: #6b4b00; background: #fff8e5; border: 1px solid #f0d68a; white-space: nowrap; }
+.agent-message-row-internal { align-items: flex-start; }
+.agent-message-row-internal .agent-message-avatar { color: #72530a; background: #fff0bd; box-shadow: none; }
+.agent-message-row-internal .agent-message-bubble { color: #604811; background: #fff9e8; border: 1px solid #f0d68a; border-radius: 4px 14px 14px 14px; }
+.agent-message-row-internal.agent-message-row-mine .agent-message-bubble { color: #604811; background: #fff9e8; border-color: #f0d68a; box-shadow: none; }
+.agent-internal-note-label { margin: 0 0 5px 2px; color: #80600c; font-size: 10px; font-weight: 800; }
+.agent-internal-composer { display: flex; flex-direction: column; align-items: stretch; gap: 10px; background: #fffaf0; }
+.agent-internal-composer-heading { color: #604811; font-size: 12px; font-weight: 800; }
+.agent-internal-composer-heading span { margin-left: 6px; color: #8a7750; font-size: 11px; font-weight: 500; }
+.agent-internal-composer-actions { display: flex; justify-content: flex-end; gap: 9px; }
 @media (max-width: 600px) {
     .agent-modal-backdrop { align-items: flex-end; padding: 12px; }
     .agent-details-modal { max-height: 88vh; overflow-y: auto; border-radius: 20px; }
@@ -680,6 +707,12 @@
     .agent-conversation-messages { padding: 18px 15px; }
     .agent-conversation-composer { padding: 12px; }
     .agent-conversation-send { padding: 0 12px; }
+    .agent-ticket-lifecycle { margin: 0 16px 16px; padding: 14px; }
+    .agent-ticket-lifecycle-heading { align-items: flex-start; flex-direction: column; }
+    .agent-ticket-status-flow { grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
+    .agent-ticket-status-step { min-height: 35px; flex-direction: row; align-items: flex-start; gap: 10px; }
+    .agent-ticket-status-step:not(:last-child)::after { top: 25px; left: 13px; right: auto; width: 2px; height: calc(100% - 14px); }
+    .agent-ticket-status-copy small { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
     .agent-modal-backdrop, .agent-modal { animation: none; }

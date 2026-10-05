@@ -454,7 +454,12 @@ export default function MyTicketsPage() {
         {selectedTicket && !showConversation &&(
             <TicketDetailsPage
                 ticket={selectedTicket}
-                onClose={() => setSelectedTicket(null)} onViewConversation={() => setShowConversation(true)}
+                onClose={() => setSelectedTicket(null)}
+                onViewConversation={() => setShowConversation(true)}
+                onTicketUpdated={(updatedTicket) => {
+                  setSelectedTicket(updatedTicket);
+                  setTickets(current => current.map(ticket => ticket._id === updatedTicket._id ? updatedTicket : ticket));
+                }}
             />
         )}
         {/* Conversation */}

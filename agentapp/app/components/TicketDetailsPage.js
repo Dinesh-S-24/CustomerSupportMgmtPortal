@@ -2,12 +2,47 @@
 
 import { useState, useEffect } from "react";
 import { MOCK_MESSAGES_BY_STATUS } from "../../lib/mockData";
+import { STATUSES } from "@/lib/statusColors";
+import { updateTicketStatus } from "@/lib/api";
 
-export default function TicketDetailsPage({ ticket, onClose, onViewConversation }) {
+const STATUS_DESCRIPTIONS = {
+    Assigned: "Ticket assigned to support agent.",
+    "In Progress": "Agent actively working on ticket.",
+    "Waiting for Customer": "Awaiting customer response.",
+    Resolved: "Issue fixed.",
+    Closed: "Final completion status.",
+};
+const STATUS_FLOW = STATUSES;
+
+export default function TicketDetailsPage({ ticket, onClose, onViewConversation, onTicketUpdated }) {
 
     console.log("the result is", MOCK_MESSAGES_BY_STATUS);
 
     const [user, setUser] = useState(null);
+    const [status, setStatus] = useState(ticket.status);
+    const [statusUpdating, setStatusUpdating] = useState(false);
+    const [statusError, setStatusError] = useState("");
+
+    useEffect(() => setStatus(ticket.status), [ticket.status]);
+
+    const currentFlowIndex = STATUS_FLOW.indexOf(status);
+    const nextStatus = STATUS_FLOW[currentFlowIndex + 1];
+    const handleAdvanceStatus = async () => {
+        if (!nextStatus || statusUpdating) return;
+        setStatusUpdating(true);
+        setStatusError("");
+        try {
+            const response = await updateTicketStatus(ticket._id, nextStatus);
+            console.log("the ticket is tht is  eing pases",ticket._id);
+            const updatedTicket = response.data;
+            setStatus(updatedTicket.status);
+            onTicketUpdated?.(updatedTicket);
+        } catch (error) {
+            setStatusError(error.message || "Could not update ticket status.");
+        } finally {
+            setStatusUpdating(false);
+        }
+    };
 
     useEffect(() => {
         const stored = localStorage.getItem("user");
@@ -64,7 +99,7 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation 
                             },
                             {
                                 label: 'Status',
-                                value: ticket.status
+                                value: status
                             },
                             {
                                 label: 'Assigned Agent',
@@ -105,6 +140,28 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation 
                         ))}
 
                     </div>
+
+                    <section className="agent-ticket-lifecycle" aria-labelledby="ticket-lifecycle-title">
+                        <div className="agent-ticket-lifecycle-heading">
+                            <div>
+                                <p className="agent-details-description-title" id="ticket-lifecycle-title">Ticket status</p>
+                                <p className="agent-ticket-lifecycle-help">Move the ticket through each step as work progresses.</p>
+                            </div>
+                            {nextStatus && <button type="button" onClick={handleAdvanceStatus} disabled={statusUpdating} className="agent-button agent-button-primary agent-status-advance">{statusUpdating ? "Updating..." : `Move to ${nextStatus} →`}</button>}
+                        </div>
+                        <ol className="agent-ticket-status-flow">
+                            {STATUS_FLOW.map((step, index) => {
+                                const activeIndex = currentFlowIndex;
+                                const isCurrent = step === status;
+                                const isComplete = activeIndex >= 0 && index < activeIndex;
+                                return <li key={step} className={`agent-ticket-status-step${isCurrent ? " is-current" : ""}${isComplete ? " is-complete" : ""}`} aria-current={isCurrent ? "step" : undefined}>
+                                    <span className="agent-ticket-status-marker">{isComplete ? "✓" : index + 1}</span>
+                                    <span className="agent-ticket-status-copy"><strong>{step}</strong><small>{STATUS_DESCRIPTIONS[step]}</small></span>
+                                </li>;
+                            })}
+                        </ol>
+                        {statusError && <p className="agent-status-error" role="alert">{statusError}</p>}
+                    </section>
 
 
                     {/* Customer Details */}
@@ -247,7 +304,7 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation 
                         </button>
 
 
-                        {MOCK_MESSAGES_BY_STATUS[ticket.status] && (
+                                {MOCK_MESSAGES_BY_STATUS[status] && (
 
                             <button
                                 onClick={onViewConversation}

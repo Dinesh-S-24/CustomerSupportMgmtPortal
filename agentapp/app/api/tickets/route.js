@@ -2,6 +2,8 @@
 import { NextResponse } from "next/server";
 import { tickets } from "@/lib/mockData";
 
+const STATUS_FLOW = ["Assigned", "In Progress", "Waiting for Customer", "Resolved", "Closed"];
+
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   console.log("searchparams",searchParams);
@@ -56,11 +58,35 @@ const now = new Date();
     _id: String(tickets.length + 1),
     ticketNumber: `TKT-${1000 + tickets.length + 1}`,
     ...body,
-    status: "Open",
+    status: "Assigned",
     assignedAgentId: "Not yet Assigned",
     createdAt:formattedDate,
     updatedAt:formattedDate
   };
   tickets.push(newTicket);
   return NextResponse.json({ success: true, message: "Success", data: newTicket });
+}
+
+export async function PATCH(req) {
+  const { ticket_id, status } = await req.json();
+  const ticket = tickets.find(item => String(item._id) === String(ticket_id));
+  if (!ticket) {
+    return NextResponse.json({ success: false, message: "Ticket not found" }, { status: 404 });
+  }
+
+  const currentIndex = STATUS_FLOW.indexOf(ticket.status);
+  const nextStatus = STATUS_FLOW[currentIndex + 1];
+  if (!nextStatus || status !== nextStatus) {
+    return NextResponse.json({
+      success: false,
+      message: nextStatus ? `Next status must be ${nextStatus}` : "This ticket is already closed",
+    }, { status: 400 });
+  }
+
+  ticket.status = status;
+  ticket.updatedAt = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit", month: "short", year: "numeric",
+  }).format(new Date());
+
+  return NextResponse.json({ success: true, message: "Ticket status updated", data: ticket });
 }

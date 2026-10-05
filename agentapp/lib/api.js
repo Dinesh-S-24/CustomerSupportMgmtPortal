@@ -50,6 +50,15 @@ export async function getTicketById(id) {
   return handle(res);
 }
 
+export async function updateTicketStatus(ticketId, status) {
+  const res = await fetch(`${BASE}/tickets`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ticket_id: ticketId, status }),
+  });
+  return handle(res);
+}
+
 export async function getDashboardCounts() {
   const res = await fetch(`${BASE}/dashboard`);
   return handle(res);
