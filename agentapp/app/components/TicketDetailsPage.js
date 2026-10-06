@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { MOCK_MESSAGES_BY_STATUS } from "../../lib/mockData";
 import { STATUSES } from "@/lib/statusColors";
-import { updateTicketStatus } from "@/lib/api";
+import { getCustomerById, updateTicketStatus } from "@/lib/api";
+import { useToast } from '@/context/ToastContext';
 
 const STATUS_DESCRIPTIONS = {
     Assigned: "Ticket assigned to support agent.",
@@ -17,13 +18,41 @@ const STATUS_FLOW = STATUSES;
 export default function TicketDetailsPage({ ticket, onClose, onViewConversation, onTicketUpdated }) {
 
     console.log("the result is", MOCK_MESSAGES_BY_STATUS);
+    const { showToast }    = useToast();
 
     const [user, setUser] = useState(null);
+    const [customerLoading, setCustomerLoading] = useState(false);
     const [status, setStatus] = useState(ticket.status);
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [statusError, setStatusError] = useState("");
 
     useEffect(() => setStatus(ticket.status), [ticket.status]);
+
+    useEffect(() => {
+        let active = true;
+        if (!ticket.customerId) {
+            setUser(null);
+            setCustomerLoading(false);
+            return () => { active = false; };
+        }
+
+        setUser(null);
+        setCustomerLoading(true);
+        getCustomerById(ticket.customerId)
+            .then((response) => {
+                console.log("the response in datagrnrn",response);
+                if (active) setUser(response.data);
+            })
+            .catch((error) => {
+                console.error("Could not load ticket customer", error);
+                if (active) setUser(null);
+            })
+            .finally(() => {
+                if (active) setCustomerLoading(false);
+            });
+
+        return () => { active = false; };
+    }, [ticket._id, ticket.customerId]);
 
     const currentFlowIndex = STATUS_FLOW.indexOf(status);
     const nextStatus = STATUS_FLOW[currentFlowIndex + 1];
@@ -33,10 +62,13 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation,
         setStatusError("");
         try {
             const response = await updateTicketStatus(ticket._id, nextStatus);
-            console.log("the ticket is tht is  eing pases",ticket._id);
             const updatedTicket = response.data;
+            if(response.success){
+                showToast(response.message);
+            }
             setStatus(updatedTicket.status);
             onTicketUpdated?.(updatedTicket);
+
         } catch (error) {
             setStatusError(error.message || "Could not update ticket status.");
         } finally {
@@ -44,15 +76,7 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation,
         }
     };
 
-    useEffect(() => {
-        const stored = localStorage.getItem("user");
-
-        if (stored) {
-            setUser(JSON.parse(stored));
-        }
-    }, []);
-
-    const customerName = user?.name || 'Customer details unavailable';
+    const customerName = customerLoading ? 'Loading customer...' : user?.name || 'Customer details unavailable';
 
     const customerInitials = user?.name
         ?.split(/\s+/)

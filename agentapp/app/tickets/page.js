@@ -211,7 +211,6 @@ export default function MyTicketsPage() {
                   <th>Priority</th>
                   <th>Status</th>
                   <th>Created At</th>
-                  <th>Assigned Agent</th>
                   <th>Action</th>
 
                 </tr>
@@ -227,7 +226,7 @@ export default function MyTicketsPage() {
                     <tr>
 
                       <td
-                          colSpan="12"
+                          colSpan="7"
                           className="support-loading"
                       >
 
@@ -248,7 +247,7 @@ export default function MyTicketsPage() {
 
                         <tr>
 
-                          <td colSpan="12">
+                          <td colSpan="7">
 
                             <div className="support-empty">
 
@@ -339,12 +338,6 @@ export default function MyTicketsPage() {
 
                           <td>
                             <span className="ticket-date">{t.createdAt}</span>
-                          </td>
-
-                          {/* ASSIGNED AGENT */}
-
-                          <td>
-                            <span className="ticket-agent">{t.assignedAgentId || "Unassigned"}</span>
                           </td>
 
                           {/* ACTION */}

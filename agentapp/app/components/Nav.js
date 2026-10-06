@@ -17,6 +17,7 @@ export default function Nav() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const menuRef = useRef(null);
     const { showToast }    = useToast();
 
@@ -24,6 +25,10 @@ export default function Nav() {
     const stored = localStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
   }, []);
+
+  useEffect(() => {
+    setNavOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -73,7 +78,20 @@ if(res.ok){
           </span>
         </Link>
         <div className="support-nav-right">
-          <nav className="support-nav-links" aria-label="Primary navigation">
+          <button
+            type="button"
+            className={`support-nav-toggle${navOpen ? " is-open" : ""}`}
+            onClick={() => setNavOpen((wasOpen) => !wasOpen)}
+            aria-expanded={navOpen}
+            aria-controls="support-primary-navigation"
+            aria-label={navOpen ? "Close navigation menu" : "Open navigation menu"}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+
+          <nav id="support-primary-navigation" className={`support-nav-links${navOpen ? " is-open" : ""}`} aria-label="Primary navigation">
             {LINKS.map((link) => {
               const active = pathname === link.href || (
                 link.href === "/tickets" &&
@@ -86,6 +104,7 @@ if(res.ok){
                   href={link.href}
                   className={active ? "support-nav-link--active" : "support-nav-link"}
                   aria-current={active ? "page" : undefined}
+                  onClick={() => setNavOpen(false)}
                 >
                   {link.label}
                 </Link>
@@ -103,7 +122,10 @@ if(res.ok){
               aria-label={`Account menu for ${user?.name || "your account"}`}
             >
               <span className="support-account-avatar">{initial}</span>
-              <span className="support-account-name">{user?.name || "Account"}</span>
+              <span className="support-account-copy">
+                <span className="support-account-name">{user?.name || "Account"}</span>
+                {/* <span className="support-account-caption">Agent account</span> */}
+              </span>
               <svg
                 width="10"
                 height="10"

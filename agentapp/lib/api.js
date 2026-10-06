@@ -28,27 +28,7 @@ export async function getTickets({ search = "", status = "", page = 1 } = {}) {
   const res = await fetch(`${BASE}/tickets?${params}`);
   return handle(res);
 }
-export async function getticketsfortest(search,status) {
-  const urlfor=new URLSearchParams();
-  if(search) urlfor.set("search",search);
-    if(status) urlfor.set("status",status);
 
-  const res = await fetch(`${BASE}/tickets?${urlfor}`);
-  return handle(res);
-}
-export async function createTicket(payload) {
-  const res = await fetch(`${BASE}/tickets`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  return handle(res);
-}
-
-export async function getTicketById(id) {
-  const res = await fetch(`${BASE}/tickets/${id}`);
-  return handle(res);
-}
 
 export async function updateTicketStatus(ticketId, status) {
   const res = await fetch(`${BASE}/tickets`, {
@@ -58,8 +38,10 @@ export async function updateTicketStatus(ticketId, status) {
   });
   return handle(res);
 }
-
-export async function getDashboardCounts() {
-  const res = await fetch(`${BASE}/dashboard`);
+export async function getCustomerById(id) {
+  const res = await fetch(`${BASE}/customers/${encodeURIComponent(id)}`);
+  console.log("the res ssisisiisi",res);
   return handle(res);
 }
+
+

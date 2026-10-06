@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import {MOCK_MESSAGES_BY_STATUS } from "../../lib/mockData";
+// import {MOCK_MESSAGES_BY_STATUS } from "../../lib/mockData";
+import {customers, MOCK_MESSAGES_BY_STATUS } from "../../lib/mockData";
 
 function formatTime(iso) {
     return new Date(iso).toLocaleTimeString('en-IN', {
@@ -27,6 +28,10 @@ export default function ConversationModal({ ticket, onClose }) {
     useEffect(() => {
         setCurrentUser(sessionStorage.getItem('forlogin') || 'agent');
     }, []);
+    useEffect(() => {
+        setMessages(MOCK_MESSAGES_BY_STATUS[ticket.status] || []);
+    }, [ticket._id, ticket.status]);
+
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,7 +54,7 @@ export default function ConversationModal({ ticket, onClose }) {
             const newMsg = {
                 _id:       `msg${Date.now()}`,
                 ticketId:  ticket._id,
-                agentId:  currentUser,
+                senderId:  currentUser,
                 message:   reply,
                 createdAt: new Date().toISOString()
             };
@@ -74,7 +79,7 @@ export default function ConversationModal({ ticket, onClose }) {
             setMessages(prev => [...prev, {
                 _id: `note${Date.now()}`,
                 ticketId: ticket._id,
-                agentId: currentUser,
+                senderId: currentUser,
                 message: note.trim(),
                 createdAt,
                 isInternalNote: true
@@ -128,8 +133,16 @@ export default function ConversationModal({ ticket, onClose }) {
                     </div>
 
                     {messages.map(msg => {
-                        const isMe = msg.agentId === currentUser;
+                        // const isMe = msg.agentId === currentUser;
+                        console.log("hey conversationmsgs are",msg);
+                        // const isInternalNote = Boolean(msg.isInternalNote);
+                        const customer = customers.find((item) => String(item._id) === String(msg.senderId));
+                        const isCustomer = Boolean(customer);
+                        const isMe = !isCustomer;
                         const isInternalNote = Boolean(msg.isInternalNote || msg.is_internal_note);
+                        const avatar = isCustomer
+                            ? customer?.name?.trim()?.charAt(0)?.toUpperCase() || 'C'
+                            : 'A';
 
                         return (
                             <div
@@ -137,10 +150,14 @@ export default function ConversationModal({ ticket, onClose }) {
                                 className={`agent-message-row${isMe ? " agent-message-row-mine" : ""}${isInternalNote ? " agent-message-row-internal" : ""}`}
                             >
                                 {/* Avatar */}
-                                <div className="agent-message-avatar">
+                                {/* <div className="agent-message-avatar">
                                     {isMe ? 'Me' : 'AG'}
-                                </div>
+                                </div> */}
 
+
+                                <div className="agent-message-avatar" aria-label={isCustomer ? `${customer?.name || 'Customer'} avatar` : 'Agent avatar'}>
+                                    {avatar}
+</div>
                                 {/* Bubble */}
                                 <div className="agent-message-content">
                                     {isInternalNote && <div className="agent-internal-note-label">🔒 Internal note · Support staff only</div>}

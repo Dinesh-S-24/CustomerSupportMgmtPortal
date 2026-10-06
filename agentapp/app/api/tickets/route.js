@@ -44,29 +44,6 @@ export async function GET(req) {
   });
 }
 
-export async function POST(req) {
-    console.log("m inside post request of creating tickets");
-  const body = await req.json();
-      console.log("m inside post request of creating tickets",body);
-const now = new Date();
-  const formattedDate = new Intl.DateTimeFormat('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  }).format(now);
-  const newTicket = {
-    _id: String(tickets.length + 1),
-    ticketNumber: `TKT-${1000 + tickets.length + 1}`,
-    ...body,
-    status: "Assigned",
-    assignedAgentId: "Not yet Assigned",
-    createdAt:formattedDate,
-    updatedAt:formattedDate
-  };
-  tickets.push(newTicket);
-  return NextResponse.json({ success: true, message: "Success", data: newTicket });
-}
-
 export async function PATCH(req) {
   const { ticket_id, status } = await req.json();
   const ticket = tickets.find(item => String(item._id) === String(ticket_id));
