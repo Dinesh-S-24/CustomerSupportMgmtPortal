@@ -175,7 +175,7 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation,
                         </div>
                         <ol className="agent-ticket-status-flow">
                             {STATUS_FLOW.map((step, index) => {
-                                const activeIndex = currentFlowIndex;
+                                const activeIndex = currentFlowIndex;//updated status
                                 const isCurrent = step === status;
                                 const isComplete = activeIndex >= 0 && index < activeIndex;
                                 return <li key={step} className={`agent-ticket-status-step${isCurrent ? " is-current" : ""}${isComplete ? " is-complete" : ""}`} aria-current={isCurrent ? "step" : undefined}>

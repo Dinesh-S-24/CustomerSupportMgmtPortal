@@ -59,7 +59,7 @@ export default function AgentLoginPage() {
             localStorage.setItem("token", data.data.token);
             localStorage.setItem("user", JSON.stringify(data.data.user));
 console.log("the suudsu",data);
-            router.push("/tickets");
+            router.push("/dashboard");
         } catch (err) {
             setError(err.message);
         } finally {

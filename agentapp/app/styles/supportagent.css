@@ -8,7 +8,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-    /* Brand: indigo â†’ violet â†’ fuchsia (customer portal stays teal) */
     --agent-indigo:        #4f46e5;
     --agent-violet:        #7c3aed;
     --agent-fuchsia:       #c026d3;
@@ -1072,4 +1071,55 @@
   .agent-portal-nav .support-account-caption { display: none; }
   .agent-portal-nav .support-account-trigger { gap: 7px; padding-right: 8px; }
   .agent-portal-nav .support-account-name { max-width: 94px; }
+}
+
+/* Login page layouts for smaller screens and short viewports. */
+.agent-login-page {
+    min-height: 100vh;
+    min-height: 100svh;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.agent-login-shell {
+    height: min(640px, calc(100dvh - 64px));
+    min-height: 520px;
+}
+
+@media (max-width: 880px) {
+    .agent-login-page { padding: 24px 18px; }
+    .agent-login-frame { max-width: 480px; }
+    .agent-login-shell { height: auto; min-height: 0; }
+    .agent-showcase { display: none; }
+    .agent-form-side { min-height: 0; overflow: visible; padding: 44px 40px; }
+}
+
+@media (max-width: 560px) {
+    .agent-login-page { align-items: flex-start; padding: 14px 12px; }
+    .agent-login-frame { max-width: 440px; border-radius: 22px; }
+    .agent-login-shell { border-radius: 21px; }
+    .agent-showcase { gap: 16px; padding: 22px 20px; }
+    .agent-brand-mark { width: 38px; height: 38px; }
+    .agent-brand-name { font-size: 14px; }
+    .agent-showcase-title { margin-bottom: 8px; font-size: clamp(22px, 7vw, 28px); }
+    .agent-showcase-text { font-size: 13px; line-height: 1.55; }
+    .agent-form-side { padding: 28px 20px 26px; }
+    .agent-form-title { font-size: 24px; }
+    .agent-form-subtitle { margin-bottom: 20px; }
+    .agent-form-footer { margin-top: 16px; padding-top: 13px; font-size: 12px; }
+}
+
+@media (max-width: 360px) {
+    .agent-login-page { padding: 10px 8px; }
+    .agent-showcase { padding: 18px 16px; }
+    .agent-form-side { padding: 24px 16px; }
+    .agent-label-row { align-items: flex-start; gap: 8px; }
+    .agent-link { text-align: right; }
+}
+
+@media (max-height: 700px) and (min-width: 881px) {
+    .agent-login-page { align-items: flex-start; }
+    .agent-login-shell { height: auto; min-height: 0; }
+    .agent-showcase, .agent-form-side { padding-top: 28px; padding-bottom: 28px; }
 }
