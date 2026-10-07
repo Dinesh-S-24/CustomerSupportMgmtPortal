@@ -1081,6 +1081,30 @@
     overflow-x: hidden;
     overflow-y: auto;
 }
+.agent-remember-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 2px 0 12px;
+    color: var(--agent-text-secondary);
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.agent-remember-checkbox {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    margin: 0;
+    accent-color: var(--agent-indigo);
+    cursor: pointer;
+}
+
+.agent-remember-checkbox:focus-visible {
+    outline: 3px solid rgba(124, 58, 237, 0.35);
+    outline-offset: 2px;
+}
 
 .agent-login-shell {
     height: min(640px, calc(100dvh - 64px));

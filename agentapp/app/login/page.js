@@ -41,6 +41,7 @@ export default function AgentLoginPage() {
     const [error,        setError]        = useState("");
     const [loading,      setLoading]      = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe,   setRememberMe]   = useState(false);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -54,12 +55,15 @@ export default function AgentLoginPage() {
         setLoading(true);
 
         try {
-            const data = await loginUser(email, password);
+            const data = await loginUser(email, password, rememberMe);
             sessionStorage.setItem("forlogin", data.data.user._id);
-            localStorage.setItem("token", data.data.token);
-            localStorage.setItem("user", JSON.stringify(data.data.user));
-console.log("the suudsu",data);
-            router.push("/dashboard");
+            const storage = rememberMe ? localStorage : sessionStorage;
+            const otherStorage = rememberMe ? sessionStorage : localStorage;
+            storage.setItem("token", data.data.token);
+            storage.setItem("user", JSON.stringify(data.data.user));
+            otherStorage.removeItem("token");
+            otherStorage.removeItem("user");
+            router.push("/tickets");
         } catch (err) {
             setError(err.message);
         } finally {
@@ -145,14 +149,14 @@ console.log("the suudsu",data);
 
                                 {/* Password */}
                                 <div className="agent-field">
-                                    <div className="agent-label-row">
+                                    {/* <div className="agent-label-row">
                                         <label className="agent-label" htmlFor="agent-password">
                                             Password
                                         </label>
                                         <a href="/forgot-password" className="agent-link">
                                             Forgot password?
                                         </a>
-                                    </div>
+                                    </div> */}
                                     <div className="agent-input-wrap">
                                         <LockIcon />
                                         <input
@@ -175,6 +179,17 @@ console.log("the suudsu",data);
                                     </div>
                                 </div>
 
+                                <label className="agent-remember-row" htmlFor="agent-remember-me">
+                                    <input
+                                        id="agent-remember-me"
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={e => setRememberMe(e.target.checked)}
+                                        className="agent-remember-checkbox"
+                                    />
+                                    <span>Remember me on this device</span>
+                                </label>
+
                                 {/* Error */}
                                 {/* {error && (
                                     <div className="agent-error" role="alert">
@@ -182,15 +197,15 @@ console.log("the suudsu",data);
                                         <span>{error}</span>
                                     </div>
                                 )} */}
-{/* Error (slot is always reserved so the layout never jumps) */}
-<div className="agent-error-slot">
-    {error && (
-        <div className="agent-error" role="alert">
-            <AlertIcon />
-            <span>{error}</span>
-        </div>
-    )}
-</div>
+                                {/* Error (slot is always reserved so the layout never jumps) */}
+                                <div className="agent-error-slot">
+                                    {error && (
+                                        <div className="agent-error" role="alert">
+                                            <AlertIcon />
+                                            <span>{error}</span>
+                                        </div>
+                                    )}
+                                </div>
                                 {/* Submit */}
                                 <button
                                     type="submit"

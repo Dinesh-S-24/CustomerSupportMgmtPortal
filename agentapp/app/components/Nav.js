@@ -22,7 +22,7 @@ export default function Nav() {
     const { showToast }    = useToast();
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
+    const stored = localStorage.getItem("user") || sessionStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
   }, []);
 
@@ -52,6 +52,8 @@ if(res.ok){
 
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     router.push("/login");
 
 }

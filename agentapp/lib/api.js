@@ -11,16 +11,16 @@ async function handle(res) {
   return body;
 }
 
-export async function loginUser(email, password) {
+
+export async function loginUser(email, password, rememberMe = false) {
   const res = await fetch(`${BASE}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, rememberMe }),
   });
   
   return handle(res);
 }
-
 export async function getTickets({ search = "", status = "", page = 1 } = {}) {
   const params = new URLSearchParams({ page });
   if (search) params.set("search", search);
