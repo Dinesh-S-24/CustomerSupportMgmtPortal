@@ -100,11 +100,11 @@ export const users = [
 ];
 export const customers = [
   { _id: "c1", name: "Nouman", email: "Nouman@test.com", role: "customer" },
-    { _id: "c2", name: "dd", email: "furan@test.com", role: "customer" },
-      { _id: "c3", name: "cc", email: "khan@test.com", role: "customer" },
-        { _id: "c4", name: "ww", email: "june@test.com", role: "customer" },
+    { _id: "c2", name: "jim", email: "furan@test.com", role: "customer" },
+      { _id: "c3", name: "hayer", email: "khan@test.com", role: "customer" },
+        { _id: "c4", name: "klim", email: "june@test.com", role: "customer" },
                 { _id: "c5", name: "wefw", email: "jule@test.com", role: "customer" },
-                                { _id: "c6", name: "rrtrt", email: "decemner@test.com", role: "customer" }
+                                { _id: "c6", name: "jonathan", email: "decemner@test.com", role: "customer" }
 
 
 

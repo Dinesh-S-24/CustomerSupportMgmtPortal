@@ -1147,3 +1147,35 @@
     .agent-login-shell { height: auto; min-height: 0; }
     .agent-showcase, .agent-form-side { padding-top: 28px; padding-bottom: 28px; }
 }
+@media (max-width: 560px) {
+  .agent-conversation-composer .agent-internal-note-trigger {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-self: flex-start;
+    visibility: visible;
+    opacity: 1;
+  }
+  .agent-internal-composer {
+    display: flex;
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+  .agent-internal-composer-actions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    width: 100%;
+    overflow: visible;
+  }
+  .agent-internal-composer-actions .agent-button {
+    display: inline-flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
