@@ -3,9 +3,18 @@ import { NextResponse } from "next/server";
 import { tickets } from "@/lib/mockData";
 
 const STATUS_FLOW = ["Assigned", "In Progress", "Waiting for Customer", "Resolved", "Closed"];
+const MOCK_INTERNAL_NOTES = {
+  "1": [
+    { _id: "mock-note-1", ticketId: "1", message: "Checked the delivery status with the carrier. Waiting for the latest tracking update before contacting the customer.", createdAt: "2026-09-08T10:15:00.000Z", isInternalNote: true },
+  ],
+  "2": [
+    { _id: "mock-note-2", ticketId: "2", message: "Reviewed the order details. Confirm the delivery address if the customer replies.", createdAt: "2026-09-08T11:30:00.000Z", isInternalNote: true },
+  ],
+};
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
+  
   console.log("searchparams",searchParams);
   const status = searchParams.get("status");
   const search = searchParams.get("search")?.toLowerCase();

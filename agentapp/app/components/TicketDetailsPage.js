@@ -54,8 +54,8 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation,
         return () => { active = false; };
     }, [ticket._id, ticket.customerId]);
 
-    const currentFlowIndex = STATUS_FLOW.indexOf(status);
-    const nextStatus = STATUS_FLOW[currentFlowIndex + 1];
+    const currentFlowIndex = STATUS_FLOW.indexOf(status);//2
+    const nextStatus = STATUS_FLOW[currentFlowIndex + 1];//3
     const handleAdvanceStatus = async () => {
         if (!nextStatus || statusUpdating) return;
         setStatusUpdating(true);

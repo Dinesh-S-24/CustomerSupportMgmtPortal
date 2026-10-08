@@ -8,9 +8,11 @@ import { getTickets } from "@/lib/api";
 import { STATUSES } from "@/lib/statusColors";
 import TicketDetailsPage from "@/app/components/TicketDetailsPage";
 import Nav       from '@/app/components/Nav';
+import { useToast } from '@/context/ToastContext';
 
 // const PAGE_SIZE = 5;
 export default function MyTicketsPage() {
+  const { showToast } = useToast();
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [pageSize, setPageSize] = useState(5);
   const [showConversation, setShowConversation] = useState(false);
@@ -25,6 +27,44 @@ export default function MyTicketsPage() {
 
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [noteTicket, setNoteTicket] = useState(null);
+  const [noteDraft, setNoteDraft] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
+  const [noteError, setNoteError] = useState("");
+
+  const openNoteModal = (ticket) => {
+    setNoteTicket(ticket);
+    setNoteDraft("");
+    setNoteError("");
+  };
+
+  const saveInternalNote = async () => {
+    const message = noteDraft.trim();
+    if (!noteTicket || !message || savingNote) return;
+
+    setSavingNote(true);
+    setNoteError("");
+    try {
+      const response = await fetch("/api/ticketaddinternalnote", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticket_id: noteTicket._id, internal_note: message }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.message || "Could not save note.");
+
+      const updatedTicket = result.data;
+      console.log("theupdated tifjvdnvjk",result);
+      setTickets(current => current.map(ticket => String(ticket._id) === String(updatedTicket._id) ? updatedTicket : ticket));
+      setNoteTicket(updatedTicket);
+      setNoteDraft("");
+      showToast("Notes added successfully");
+    } catch (error) {
+      setNoteError(error.message || "Could not save note.");
+    } finally {
+      setSavingNote(false);
+    }
+  };
 
   useEffect(() => {
     // let active = true;
@@ -130,17 +170,17 @@ export default function MyTicketsPage() {
                   <label className="support-search-wrap">
                     <span aria-hidden="true" className="support-search-icon">⌕</span>
 
-                  <input
-                      type="text"
-                      placeholder="Search tickets..."
-                      value={search}
-                      onChange={(e) => {
+                    <input
+                        type="text"
+                        placeholder="Search tickets..."
+                        value={search}
+                        onChange={(e) => {
 
-                        setSearch(e.target.value);
-                        setPage(1);
-                      }}
-                      className="support-input"
-                  />
+                          setSearch(e.target.value);
+                          setPage(1);
+                        }}
+                        className="support-input"
+                    />
                   </label>
 
                   {/* <select
@@ -190,7 +230,7 @@ export default function MyTicketsPage() {
             <div className="ticket-quick-filters" aria-label="Filter tickets by status">
               <button type="button" className={`ticket-filter-chip ${status === "" ? "active" : ""}`} onClick={() => { setStatus(""); setPage(1); }} aria-pressed={status === ""}>All tickets</button>
               {STATUSES.map((s) => (
-                <button key={s} type="button" className={`ticket-filter-chip ${status === s ? "active" : ""}`} onClick={() => { setStatus(s); setPage(1); }} aria-pressed={status === s}>{s}</button>
+                  <button key={s} type="button" className={`ticket-filter-chip ${status === s ? "active" : ""}`} onClick={() => { setStatus(s); setPage(1); }} aria-pressed={status === s}>{s}</button>
               ))}
               <span className="ticket-result-count">{loading ? "Updating…" : `${total} ${total === 1 ? "ticket" : "tickets"}`}</span>
             </div>
@@ -211,6 +251,7 @@ export default function MyTicketsPage() {
                   <th>Priority</th>
                   <th>Status</th>
                   <th>Created At</th>
+                  <th>Internal Note <span aria-label="Support staff only">🔒</span></th>
                   <th>Action</th>
 
                 </tr>
@@ -226,7 +267,7 @@ export default function MyTicketsPage() {
                     <tr>
 
                       <td
-                          colSpan="7"
+                          colSpan="8"
                           className="support-loading"
                       >
 
@@ -247,7 +288,7 @@ export default function MyTicketsPage() {
 
                         <tr>
 
-                          <td colSpan="7">
+                          <td colSpan="8">
 
                             <div className="support-empty">
 
@@ -290,9 +331,9 @@ export default function MyTicketsPage() {
   </span>
 
 
-                            <div className="ticket-id">
+                            <button type="button" className="ticket-id ticket-id-button" onClick={() => openNoteModal(t)} aria-label={`Open internal notes for ticket ${t.ticketNumber}`}>
                               #{t._id}
-                            </div>
+                            </button>
 
                           </td>
 
@@ -338,6 +379,13 @@ export default function MyTicketsPage() {
 
                           <td>
                             <span className="ticket-date">{t.createdAt}</span>
+                          </td>
+
+                          <td>
+                            <button type="button" className="support-btn support-btn-secondary support-btn-small ticket-internal-note-button" onClick={() => openNoteModal(t)}>
+                              <span aria-hidden="true">✎</span> Add internal note
+                              {(t.internalNotes?.length || 0) > 0 && <span className="ticket-note-count"> · {t.internalNotes.length}</span>}
+                            </button>
                           </td>
 
                           {/* ACTION */}
@@ -461,6 +509,39 @@ export default function MyTicketsPage() {
                 ticket={selectedTicket}
                 onClose={() => setShowConversation(false)}
             />
+        )}
+        {noteTicket && (
+          <div className="agent-modal-backdrop agent-note-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !savingNote) setNoteTicket(null); }}>
+            <section className="agent-modal agent-note-modal" role="dialog" aria-modal="true" aria-labelledby="internal-note-title">
+              <button type="button" className="agent-modal-close" onClick={() => setNoteTicket(null)} aria-label="Close internal notes" disabled={savingNote}>×</button>
+              <header className="agent-note-header">
+                <span className="agent-note-icon" aria-hidden="true">🔒</span>
+                <div>
+                  <p className="agent-modal-kicker">Support staff only · Ticket ID #{noteTicket._id}</p>
+                  <h2 className="agent-modal-title" id="internal-note-title">Internal notes</h2>
+                  <p className="agent-note-subtitle">{noteTicket.ticketNumber} · {noteTicket.subject}</p>
+                </div>
+              </header>
+              <div className="agent-note-content">
+                <div className="agent-note-history" aria-label="Saved internal notes">
+                  {(noteTicket.internalNotes || []).length ? noteTicket.internalNotes.map((item) => (
+                    <article className="agent-note-entry" key={item._id}>
+                      <p>{item.message}</p>
+                      <time dateTime={item.createdAt}>{item.createdAt ? new Date(item.createdAt).toLocaleString("en-IN") : "Just now"}</time>
+                    </article>
+                  )) : <p className="agent-note-empty">No notes yet. Add an internal note for the support team.</p>}
+                </div>
+                <label className="agent-note-label" htmlFor="internal-note-input">Add internal note</label>
+                <textarea id="internal-note-input" className="agent-note-input" value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} rows={4} maxLength={2000} placeholder="Write a private note about this ticket…" />
+                <div className="agent-note-helper"><span>Visible to support staff only</span><span>{noteDraft.length}/2000</span></div>
+                {noteError && <p className="agent-note-error" role="alert">{noteError}</p>}
+              </div>
+              <footer className="agent-modal-footer">
+                <button type="button" className="agent-button agent-button-secondary" onClick={() => setNoteTicket(null)} disabled={savingNote}>Cancel</button>
+                <button type="button" className="agent-button agent-button-primary" onClick={saveInternalNote} disabled={savingNote || !noteDraft.trim()}>{savingNote ? "Saving…" : "Save note"}</button>
+              </footer>
+            </section>
+          </div>
         )}
       </main>
   );

@@ -89,6 +89,96 @@ export let tickets = [
     assignedAgentId: "Zain",
     createdAt: "08 Sept 2026",
     updatedAt: "08 Sept 2026"
+  },
+   {
+    _id: "1",
+    ticketNumber: "TKT-1001",
+    subject: "Order not delivered",
+    description: "My order was supposed to arrive 3 days ago",
+    category: "Delivery Issue",
+    priority: "High",
+    status: "Closed",
+    customerId: "c1",
+    assignedAgentId: "Zain",
+    createdAt: "08 Sept 2026",
+    updatedAt: "08 Sept 2026"
+  },
+    {
+    _id: "2",
+    ticketNumber: "TKT-1002",
+    subject: "Order not delivered",
+    description: "My order was supposed to arrive 2 days ago",
+    category: "Delivery Issue",
+    priority: "Medium",
+    status: "Closed",
+    customerId: "c2",
+    assignedAgentId: "Zain",
+    createdAt: "08 Sept 2026",
+    updatedAt: "08 Sept 2026"
+  },
+    {
+    _id: "3",
+    ticketNumber: "TKT-1003",
+    subject: "Order not delivered",
+    description: "My order was supposed to arrive 3 days ago",
+    category: "Delivery Issue",
+    priority: "High",
+    status: "Closed",
+    customerId: "c3",
+    assignedAgentId: "Zain",
+    createdAt: "08 Sept 2026",
+    updatedAt: "08 Sept 2026"
+  }, {
+    _id: "4",
+    ticketNumber: "TKT-1004",
+    subject: "Order not delivered",
+    description: "My order was supposed to arrive 3 days ago",
+    category: "Delivery Issue",
+    priority: "High",
+    status: "Closed",
+    customerId: "c4",
+    assignedAgentId: "Zain",
+    createdAt: "08 Sept 2026",
+    updatedAt: "08 Sept 2026"
+  },
+    {
+    _id: "6",
+    ticketNumber: "TKT-1006",
+    subject: "Order not delivered",
+    description: "My order was supposed to arrive 2 days ago",
+    category: "Delivery Issue",
+    priority: "High",
+    status: "Closed",
+    customerId: "c5",
+    assignedAgentId: "Zain",
+    createdAt: "08 Sept 2026",
+    updatedAt: "08 Sept 2026"
+  },
+    {
+    _id: "8",
+    ticketNumber: "TKT-1008",
+    subject: "Order not delivered",
+    description: "My order was supposed to arrive 3 days ago",
+    category: "Delivery Issue",
+    priority: "High",
+    status: "Closed",
+    customerId: "c6",
+    assignedAgentId: "Zain",
+    createdAt: "08 Sept 2026",
+    updatedAt: "08 Sept 2026"
+  },
+    {
+    _id: "9",
+    ticketNumber: "TKT-1009",
+    subject: "Order not delivered",
+    description: "My order was supposed to arrive 3 days ago",
+    category: "Delivery Issue",
+    priority: "High",
+    status: "Closed",
+    customerId: "c7",
+    assignedAgentId: "Zain",
+    createdAt: "08 Sept 2026",
+    updatedAt: "08 Sept 2026"
   }
 ];
 export let messages = [
@@ -96,7 +186,9 @@ export let messages = [
 ];
 
 export const users = [
-  { _id: "u1", name: "Zain", email: "zain@test.com", role: "agent" }
+  { _id: "u1", name: "Zain", email: "zain@test.com", role: "agent" },
+    { _id: "u2", name: "khan", email: "khan@test.com", role: "agent" }
+
 ];
 export const customers = [
   { _id: "c1", name: "Nouman", email: "Nouman@test.com", role: "customer" },
