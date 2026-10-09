@@ -21,6 +21,8 @@ export default function MyTicketsPage() {
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+  const [priority, setPriority] = useState("");
+  const [category, setCategory] = useState("");
 
   // Current UI page
   const [page, setPage] = useState(1);
@@ -101,7 +103,13 @@ export default function MyTicketsPage() {
   // PAGINATION LOGIC
   // -----------------------------------
 
-  const total = tickets.length;
+  const priorities = [...new Set(tickets.map((ticket) => ticket.priority).filter(Boolean))];
+  const categories = [...new Set(tickets.map((ticket) => ticket.category).filter(Boolean))];
+  const filteredTickets = tickets.filter((ticket) =>
+    (!priority || String(ticket.priority || "").toLowerCase() === priority.toLowerCase()) &&
+    (!category || String(ticket.category || "").toLowerCase() === category.toLowerCase())
+  );
+  const total = filteredTickets.length;
 
   const totalPages = Math.max(
       1,
@@ -112,7 +120,7 @@ export default function MyTicketsPage() {
 
   const endIndex = startIndex + pageSize;
 
-  const currentTickets = tickets.slice(
+  const currentTickets = filteredTickets.slice(
       startIndex,
       endIndex
   );
@@ -182,6 +190,26 @@ export default function MyTicketsPage() {
                         className="support-input"
                     />
                   </label>
+
+                  <select
+                      aria-label="Filter by priority"
+                      value={priority}
+                      onChange={(e) => { setPriority(e.target.value); setPage(1); }}
+                      className="support-select"
+                  >
+                    <option value="">All priorities</option>
+                    {priorities.map((value) => <option key={value} value={value}>{value}</option>)}
+                  </select>
+
+                  <select
+                      aria-label="Filter by category"
+                      value={category}
+                      onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+                      className="support-select"
+                  >
+                    <option value="">All categories</option>
+                    {categories.map((value) => <option key={value} value={value}>{value}</option>)}
+                  </select>
 
                   {/* <select
                       value={status}
@@ -301,7 +329,7 @@ export default function MyTicketsPage() {
                               </p>
 
                               <p className="support-empty-text">
-                                {loadError ? "Please try again in a moment." : "Try changing your search or status filter."}
+                                {loadError ? "Please try again in a moment." : "Try changing your search or filters."}
                               </p>
                               {loadError && <button type="button" className="support-btn support-btn-secondary" onClick={() => { setLoading(true); setLoadError(false); getTickets({ search, status }).then((data) => { setTickets(data.data.tickets || []); setLoading(false); }).catch(() => { setLoadError(true); setLoading(false); }); }}>Try again</button>}
 

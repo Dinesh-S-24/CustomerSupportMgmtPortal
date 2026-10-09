@@ -5,6 +5,7 @@ import { MOCK_MESSAGES_BY_STATUS } from "../../lib/mockData";
 import { STATUSES } from "@/lib/statusColors";
 import { getCustomerById, updateTicketStatus } from "@/lib/api";
 import { useToast } from '@/context/ToastContext';
+import InternalNotesModal from "./InternalNotesModals";
 
 const STATUS_DESCRIPTIONS = {
     Assigned: "Ticket assigned to support agent.",
@@ -25,6 +26,7 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation,
     const [status, setStatus] = useState(ticket.status);
     const [statusUpdating, setStatusUpdating] = useState(false);
     const [statusError, setStatusError] = useState("");
+    const [showInternalNotes, setShowInternalNotes] = useState(false);
 
     useEffect(() => setStatus(ticket.status), [ticket.status]);
 
@@ -320,15 +322,15 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation,
                     {/* Footer */}
                     <div className="agent-modal-footer">
 
-                        <button
+                        {/* <button
                             onClick={onClose}
                             className="agent-button agent-button-secondary"
                         >
                             Close
-                        </button>
+                        </button> */}
 
 
-                                {MOCK_MESSAGES_BY_STATUS[status] && (
+                        {MOCK_MESSAGES_BY_STATUS[status] && (
 
                             <button
                                 onClick={onViewConversation}
@@ -338,12 +340,22 @@ export default function TicketDetailsPage({ ticket, onClose, onViewConversation,
                             </button>
 
                         )}
+                        <button
+                            type="button"
+                            onClick={() => setShowInternalNotes(true)}
+                            className="agent-button agent-button-secondary"
+                        >
+                            🔒 View Internal Notes
+                        </button>
 
                     </div>
 
                 </div>
 
             </div>
+            {showInternalNotes && (
+                <InternalNotesModal ticketId={ticket._id} ticketNumber={ticket.ticketNumber} onClose={() => setShowInternalNotes(false)} />
+            )}
         </>
     );
 }

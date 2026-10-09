@@ -197,7 +197,7 @@ export default function ConversationModal({ ticket, onClose }) {
                     </div>
                 ) : (
                     <div className="agent-conversation-composer">
-                        <button type="button" className="agent-button agent-internal-note-trigger" onClick={() => setComposerMode('note')}>🔒 Add Internal Note</button>
+                        {/* <button type="button" className="agent-button agent-internal-note-trigger" onClick={() => setComposerMode('note')}>🔒 Add Internal Note</button> */}
                         <textarea
                             value={reply}
                             onChange={e => setReply(e.target.value)}
